@@ -45,6 +45,23 @@ if (!empty($row['image']) and is_file(NV_UPLOADS_REAL_DIR . '/' . $module_upload
 // Xử lý trạng thái
 $row['status_text'] = $nv_Lang->getModule('status_' . $row['status']);
 
+// Lấy 5 bài viết ngẫu nhiên không trùng lặp
+$sql = 'SELECT id, title, description, image 
+        FROM ' . NV_PREFIXLANG . '_' . $module_data . ' 
+        WHERE id != ' . $id . '
+        GROUP BY id, title, description, image
+        ORDER BY RAND()
+        LIMIT 6';
+$related_posts = $db->query($sql)->fetchAll();
+
+// Xử lý ảnh cho các bài viết liên quan
+foreach ($related_posts as &$post) {
+    if (!empty($post['image']) and is_file(NV_UPLOADS_REAL_DIR . '/' . $module_upload . '/' . $post['image'])) {
+        $post['image'] = NV_BASE_SITEURL . NV_UPLOADS_DIR . '/' . $module_upload . '/' . $post['image'];
+    }
+    $post['link'] = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&amp;' . NV_NAME_VARIABLE . '=' . $module_name . '&amp;' . NV_OP_VARIABLE . '=detail&amp;id=' . $post['id'];
+}
+
 $xtpl = new XTemplate('detail.tpl', NV_ROOTDIR . '/themes/' . $global_config['module_theme'] . '/modules/' . $module_file);
 $xtpl->assign('LANG', \NukeViet\Core\Language::$lang_module);
 $xtpl->assign('GLANG', \NukeViet\Core\Language::$lang_global);
@@ -52,10 +69,31 @@ $xtpl->assign('MODULE_NAME', $module_name);
 $xtpl->assign('OP', $op);
 $xtpl->assign('ROW', $row);
 $xtpl->assign('PAGE_TITLE', $page_title);
+$xtpl->assign('RELATED_POSTS', $related_posts);
 
 // Parse ảnh nếu có
 if (!empty($row['image'])) {
     $xtpl->parse('main.image');
+}
+
+// Parse trạng thái
+if ($row['status'] == 1) {
+    $xtpl->parse('main.active');
+} else {
+    $xtpl->parse('main.inactive');
+}
+
+// Parse các bài viết liên quan
+$processed_ids = []; // Mảng lưu các ID đã xử lý
+foreach ($related_posts as $post) {
+    if (!in_array($post['id'], $processed_ids)) { // Kiểm tra nếu ID chưa được xử lý
+        $xtpl->assign('POST', $post);
+        $xtpl->parse('main.related_posts.loop');
+        $processed_ids[] = $post['id']; // Thêm ID vào mảng đã xử lý
+    }
+}
+if (!empty($processed_ids)) {
+    $xtpl->parse('main.related_posts');
 }
 
 $xtpl->parse('main');

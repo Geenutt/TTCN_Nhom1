@@ -15,7 +15,7 @@
                 <!-- Thông tin chính -->
                 <div class="post-content">
                     <!-- Phần ảnh và mô tả cùng hàng -->
-                    <div class="row margin-bottom">
+                    <div class="row margin-bottom-lg">
                         <!-- Phần ảnh -->
                         <div class="col-sm-12">
                             <!-- BEGIN: image -->
@@ -34,9 +34,12 @@
                     </div>
                     
                     <!-- Nội dung chi tiết -->
-                    <div class="row">
-                        <div class="col-sm-24">
-                            <div class="post-detail">
+                    <div class="post-detail-content">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><i class="fa fa-file-text-o"></i> {LANG.content}</h3>
+                            </div>
+                            <div class="panel-body">
                                 {ROW.content}
                             </div>
                         </div>
@@ -45,41 +48,204 @@
             </div>
             <div class="col-sm-24 col-md-6">
                 <!-- Thông tin phụ -->
-                <div class="panel panel-info">
+                <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <i class="fa fa-info-circle"></i> {LANG.info}
+                        <h3 class="panel-title"><i class="fa fa-info-circle"></i> {LANG.info}</h3>
                     </div>
                     <div class="panel-body">
                         <ul class="list-info">
                             <li>
-                                <strong>{LANG.status}:</strong> 
-                                <span class="label label-{ROW.status ? 'success' : 'danger'}" style="color: #000">{ROW.status_text}</span>
+                                <label>{LANG.status}:</label>
+                                <div class="pull-right">
+                                    <!-- BEGIN: active -->
+                                    <span class="label-active">{LANG.status_1}</span>
+                                    <!-- END: active -->
+                                    <!-- BEGIN: inactive -->
+                                    <span class="label-inactive">{LANG.status_0}</span>
+                                    <!-- END: inactive -->
+                                </div>
                             </li>
                             <li>
-                                <strong>{LANG.created_at}:</strong> 
-                                <span>{ROW.created_at}</span>
+                                <label>{LANG.created_at}:</label>
+                                <div class="pull-right text-primary">
+                                    <i class="fa fa-clock-o"></i> {ROW.created_at}
+                                </div>
                             </li>
                             <li>
-                                <strong>{LANG.updated_at}:</strong> 
-                                <span>{ROW.updated_at}</span>
+                                <label>{LANG.updated_at}:</label>
+                                <div class="pull-right text-info">
+                                    <i class="fa fa-clock-o"></i> {ROW.updated_at}
+                                </div>
                             </li>
                         </ul>
                     </div>
                 </div>
+
+                <!-- BEGIN: related_posts -->
+                <div class="panel panel-info margin-top-lg">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <i class="fa fa-random"></i> {LANG.related_posts}
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <!-- BEGIN: loop -->
+                        <div class="related-post-item clearfix" id="related-post-{POST.id}">
+                            <div class="col-xs-8 no-pd-left">
+                                <a href="{POST.link}" class="related-image">
+                                    <img src="{POST.image}" alt="{POST.title}" class="img-thumbnail" style="height:80px; object-fit:contain;"/>
+                                </a>
+                            </div>
+                            <div class="col-xs-16">
+                                <h4 class="post-title">
+                                    <a href="{POST.link}">{POST.title}</a>
+                                </h4>
+                                <div class="post-description text-muted">
+                                    {POST.description}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- END: loop -->
+                    </div>
+                </div>
+                <!-- END: related_posts -->
             </div>
         </div>
     </div>
 </div>
 
+<style>
+.margin-bottom-lg {
+    margin-bottom: 20px;
+}
+.list-info {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.list-info li {
+    padding: 10px 0;
+    border-bottom: 1px dashed #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.list-info li:last-child {
+    border-bottom: none;
+}
+.list-info label {
+    margin: 0;
+    font-weight: 600;
+}
+.post-description {
+    height: 100%;
+    margin-bottom: 0;
+    font-size: 15px;
+    line-height: 1.6;
+    padding: 20px;
+    background-color: #f9f9f9;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+.text-muted {
+    font-size: 12px;
+    padding: 10px;
+    color:rgb(83, 72, 72);
+}
+
+.post-detail-content {
+    background: #fff;
+    padding: 15px;
+    border-radius: 4px;
+}
+.panel-title {
+    font-size: 14px;
+    font-weight: bold;
+}
+.panel-title i {
+    margin-right: 5px;
+}
+.post-detail-content .panel-body {
+    padding: 15px;
+    line-height: 1.6;
+}
+
+/* Style cho label trạng thái */
+.label-active {
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #ffffff;
+    background-color:rgb(38, 182, 38)
+}
+.label-inactive {
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #ffffff;
+    background-color: #ff0000
+}
+.margin-top-lg {
+    margin-top: 20px;
+}
+.no-pd-left {
+    padding-left: 0;
+}
+.related-post-item {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+.related-post-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+.post-title {
+    margin: 0 0 5px 0;
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 1.4;
+}
+.post-title a {
+    color: #333;
+}
+.post-title a:hover {
+    color: #000;
+    text-decoration: none;
+}
+.related-image {
+    display: block;
+    padding: 5px;
+    background: #fff;
+    border-radius: 4px;
+}
+.related-image img {
+    width: 100%;
+    height: 80px !important;
+    object-fit: contain;
+    border: 1px solid #eee;
+    border-radius: 3px;
+    transition: all 0.2s ease;
+}
+.related-image:hover img {
+    transform: scale(1.05);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+</style>
+
+<!-- Script xử lý xóa bài viết -->
 <script type="text/javascript">
 $(document).ready(function() {
-    // Xử lý nút xóa
     $('.delete-btn').click(function(e) {
         e.preventDefault();
-        var id = $(this).data('id');
-        var checkss = $(this).data('checkss');
-        
         if (confirm('{LANG.confirm_delete}')) {
+            var id = $(this).data('id');
+            var checkss = $(this).data('checkss');
             $.ajax({
                 url: script_name + '?' + nv_lang_variable + '=' + nv_lang_data + '&' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=delete',
                 type: 'POST',
@@ -101,34 +267,4 @@ $(document).ready(function() {
     });
 });
 </script>
-<!-- END: main -->
-
-<style>
-.list-info {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-.list-info li {
-    padding: 8px 0;
-    border-bottom: 1px dashed #ddd;
-}
-.list-info li:last-child {
-    border-bottom: none;
-}
-.margin-bottom {
-    margin-bottom: 15px;
-}
-.label {
-    color: #000 !important;
-    font-size: 14px !important;
-    padding: 5px 10px !important;
-}
-.post-image img {
-    margin-bottom: 0;
-}
-.post-description {
-    height: 100%;
-    margin-bottom: 0;
-}
-</style> 
+<!-- END: main --> 

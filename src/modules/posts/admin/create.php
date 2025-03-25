@@ -34,6 +34,16 @@ if ($nv_Request->get_int('save', 'post') == 1) {
     // Validate dữ liệu
     if (empty($row['title'])) {
         $error[] = $lang_module['error_title'];
+    } else {
+        // Kiểm tra trùng lặp tiêu đề
+        $sql = 'SELECT COUNT(*) FROM ' . NV_PREFIXLANG . '_' . $module_data . ' WHERE title = :title';
+        $sth = $db->prepare($sql);
+        $sth->bindParam(':title', $row['title'], PDO::PARAM_STR);
+        $sth->execute();
+        
+        if ($sth->fetchColumn()) {
+            $error[] = $lang_module['error_save'];
+        }
     }
 
     if (empty($error)) {

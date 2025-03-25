@@ -28,8 +28,15 @@ if ($search['status'] !== -1) {
     $where .= ' AND status = ' . $search['status'];
 }
 
-// Query với điều kiện tìm kiếm
-$sql = 'SELECT * FROM ' . NV_PREFIXLANG . '_' . $module_data . ' WHERE ' . $where . ' ORDER BY id DESC';
+// Thêm xử lý sắp xếp
+$orderby = $nv_Request->get_string('sortby', 'get', 'id');
+$ordertype = $nv_Request->get_string('sorttype', 'get', 'DESC');
+
+// Xác định hướng sắp xếp tiếp theo
+$ordertype_next = ($ordertype == 'DESC') ? 'ASC' : 'DESC';
+
+// Query với điều kiện tìm kiếm và sắp xếp
+$sql = 'SELECT * FROM ' . NV_PREFIXLANG . '_' . $module_data . ' WHERE ' . $where . ' ORDER BY ' . $orderby . ' ' . $ordertype;
 
 $sth = $db->prepare($sql);
 if (!empty($search['title'])) {
@@ -73,6 +80,15 @@ if ($num) {
     $contents = $xtpl->text('empty');
 }
 
+// Gán biến cho template
+$xtpl->assign('SORTBY', $orderby);
+$xtpl->assign('SORTTYPE', $ordertype);
+$xtpl->assign('SORTTYPE_NEXT', $ordertype_next);
+
+// Parse sort icon
+if ($orderby == 'id') {
+    $xtpl->parse('main.id_sort');
+}
 
 include NV_ROOTDIR . '/includes/header.php';
 echo nv_admin_theme($contents);

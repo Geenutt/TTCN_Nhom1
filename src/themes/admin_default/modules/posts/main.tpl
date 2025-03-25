@@ -42,7 +42,19 @@
     <table class="table table-striped table-bordered table-hover">
         <thead>
             <tr>
-                <th>ID{LANG.id}</th>
+                <th width="80">
+                    ID
+                    <div class="btn-group-vertical sort-buttons">
+                        <a href="{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&amp;{NV_NAME_VARIABLE}={MODULE_NAME}&amp;sortby=id&amp;sorttype=ASC&amp;search_title={SEARCH.title}&amp;search_status={SEARCH.status}" 
+                            class="sort-btn{SORTBY == 'id' && SORTTYPE == 'ASC' ? ' active' : ''}" title="{LANG.sort_asc}">
+                            <i class="fa fa-caret-up"></i>
+                        </a>
+                        <a href="{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&amp;{NV_NAME_VARIABLE}={MODULE_NAME}&amp;sortby=id&amp;sorttype=DESC&amp;search_title={SEARCH.title}&amp;search_status={SEARCH.status}" 
+                            class="sort-btn{SORTBY == 'id' && SORTTYPE == 'DESC' ? ' active' : ''}" title="{LANG.sort_desc}">
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </th>
                 <th>{LANG.title}</th>
                 <th>{LANG.created_at}</th>
                 <th>{LANG.updated_at}</th>
@@ -113,6 +125,33 @@ $(document).ready(function() {
 }
 .btn {
     margin-bottom: 0;
+}
+th {
+    position: relative;
+}
+.sort-buttons {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.sort-btn {
+    background: none;
+    border: none;
+    padding: 0 5px;
+    color: #666;
+    display: block;
+    line-height: 1;
+}
+.sort-btn:hover {
+    color: #333;
+    text-decoration: none;
+}
+.sort-btn.active {
+    color: #000;
+}
+.sort-btn i {
+    font-size: 14px;
 }
 </style>
 <!-- END: main -->
