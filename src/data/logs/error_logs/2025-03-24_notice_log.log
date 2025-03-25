@@ -1,0 +1,36 @@
+{
+    "time": "Mon, 24 Mar 2025 16:25:40 +0100",
+    "server": "localhost",
+    "ip": "::1",
+    "errno": "1024 (User Notice)",
+    "errstr": "SQLSTATE&lbrack;HY000&rbrack; &lbrack;2002&rbrack; No connection could be made because the target machine actively refused it",
+    "file": "/includes/vendor/vinades/nukeviet/Core/Database.php",
+    "line": 94,
+    "request": "/nukeviet/src/admin/index.php?language=vi&nv=siteinfo&op=notification&nocache=1742829940610",
+    "method": "POST",
+    "agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0",
+    "backtrace": [
+        "#1 /admin/index.php(17)",
+        "#2 /includes/mainfile.php(353)",
+        "#3 /includes/vendor/vinades/nukeviet/Core/Database.php(94)"
+    ]
+}
+-------------------
+{
+    "time": "Mon, 24 Mar 2025 17:18:08 +0100",
+    "server": "localhost",
+    "ip": "::1",
+    "errno": "1024 (User Notice)",
+    "errstr": "PDOException Object\n(\n    &lbrack;message:protected&rbrack; => SQLSTATE&lbrack;42000&rbrack;: Syntax error or access violation: 1067 Invalid default value for 'created_at'\n    &lbrack;string:Exception:private&rbrack; => \n    &lbrack;code:protected&rbrack; => 42000\n    &lbrack;file:protected&rbrack; => /includes/vendor/vinades/nukeviet/Core/Database.php\n    &lbrack;line:protected&rbrack; => 543\n    &lbrack;trace:Exception:private&rbrack; => Array\n        (\n            &lbrack;0&rbrack; => Array\n                (\n                    &lbrack;file&rbrack; => /includes/vendor/vinades/nukeviet/Core/Database.php\n                    &lbrack;line&rbrack; => 543\n                    &lbrack;function&rbrack; => query\n                    &lbrack;class&rbrack; => PDO\n                    &lbrack;type&rbrack; => ->\n                    &lbrack;args&rbrack; => Array\n                        (\n                            &lbrack;0&rbrack; => CREATE TABLE `nv5_vi_posts` (\n    `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT 'ID' , \n    `title` VARCHAR(255) NOT NULL DEFAULT '' COMMENT 'Ti\u00eau \u0111\u1ec1' , \n    `description` TEXT NOT NULL DEFAULT '' COMMENT 'M\u00f4 t\u1ea3 ng\u1eafn' , \n    `image` VARCHAR(255) NOT NULL DEFAULT '' COMMENT '\u1ea2nh' , \n    `content` MEDIUMTEXT NOT NULL DEFAULT '' COMMENT 'Th\u00f4ng tin chi ti\u1ebft' , \n    `status` TINYINT NOT NULL DEFAULT '1' COMMENT 'Tr\u1ea1ng th\u00e1i' , \n    `created_at` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Th\u1eddi gian kh\u1edfi t\u1ea1o' , \n    `updated_at` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'C\u1eadp nh\u1eadt g\u1ea7n nh\u1ea5t' , \n    PRIMARY KEY (`id`)\n) ENGINE = InnoDB COMMENT = 'Danh s\u00e1ch Tuy\u1ec3n d\u1ee5ng'\n                            &lbrack;1&rbrack; => \n                        )\n\n                )\n\n            &lbrack;1&rbrack; => Array\n                (\n                    &lbrack;file&rbrack; => /admin/modules/functions.php\n                    &lbrack;line&rbrack; => 193\n                    &lbrack;function&rbrack; => query\n                    &lbrack;class&rbrack; => NukeViet/Core/Database\n                    &lbrack;type&rbrack; => ->\n                    &lbrack;args&rbrack; => Array\n                        (\n                            &lbrack;0&rbrack; => CREATE TABLE `nv5_vi_posts` (\n    `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT 'ID' , \n    `title` VARCHAR(255) NOT NULL DEFAULT '' COMMENT 'Ti\u00eau \u0111\u1ec1' , \n    `description` TEXT NOT NULL DEFAULT '' COMMENT 'M\u00f4 t\u1ea3 ng\u1eafn' , \n    `image` VARCHAR(255) NOT NULL DEFAULT '' COMMENT '\u1ea2nh' , \n    `content` MEDIUMTEXT NOT NULL DEFAULT '' COMMENT 'Th\u00f4ng tin chi ti\u1ebft' , \n    `status` TINYINT NOT NULL DEFAULT '1' COMMENT 'Tr\u1ea1ng th\u00e1i' , \n    `created_at` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Th\u1eddi gian kh\u1edfi t\u1ea1o' , \n    `updated_at` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'C\u1eadp nh\u1eadt g\u1ea7n nh\u1ea5t' , \n    PRIMARY KEY (`id`)\n) ENGINE = InnoDB COMMENT = 'Danh s\u00e1ch Tuy\u1ec3n d\u1ee5ng'\n                        )\n\n                )\n\n            &lbrack;2&rbrack; => Array\n                (\n                    &lbrack;file&rbrack; => /admin/modules/recreate_mod.php\n                    &lbrack;line&rbrack; => 24\n                    &lbrack;function&rbrack; => nv_setup_data_module\n                    &lbrack;args&rbrack; => Array\n                        (\n                            &lbrack;0&rbrack; => vi\n                            &lbrack;1&rbrack; => posts\n                            &lbrack;2&rbrack; => 0\n                        )\n\n                )\n\n            &lbrack;3&rbrack; => Array\n                (\n                    &lbrack;file&rbrack; => /admin/index.php\n                    &lbrack;line&rbrack; => 170\n                    &lbrack;args&rbrack; => Array\n                        (\n                            &lbrack;0&rbrack; => /admin/modules/recreate_mod.php\n                        )\n\n                    &lbrack;function&rbrack; => require\n                )\n\n        )\n\n    &lbrack;previous:Exception:private&rbrack; => \n    &lbrack;errorInfo&rbrack; => Array\n        (\n            &lbrack;0&rbrack; => 42000\n            &lbrack;1&rbrack; => 1067\n            &lbrack;2&rbrack; => Invalid default value for 'created_at'\n        )\n\n)\n",
+    "file": "/admin/modules/functions.php",
+    "line": 195,
+    "request": "/nukeviet/src/admin/index.php?language=vi&nv=modules&op=recreate_mod",
+    "method": "POST",
+    "agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0",
+    "backtrace": [
+        "#1 /admin/index.php(170)",
+        "#2 /admin/modules/recreate_mod.php(24)",
+        "#3 /admin/modules/functions.php(195)"
+    ]
+}
+-------------------

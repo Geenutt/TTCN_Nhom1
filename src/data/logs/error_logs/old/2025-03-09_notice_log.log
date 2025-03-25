@@ -1,0 +1,13 @@
+{
+    "time": "Mon, 10 Mar 2025 00:06:56 +0700",
+    "server": "localhost",
+    "ip": "::1",
+    "errno": "1024 (User Notice)",
+    "errstr": "SQLSTATE&lbrack;23000&rbrack;: Integrity constraint violation: 1062 Duplicate entry 'uploads/menu' for key 'name'",
+    "file": "/includes/vendor/vinades/nukeviet/Core/Database.php",
+    "line": 130,
+    "request": "/nukeviet/src/install/index.php?language=vi&step=6",
+    "method": "POST",
+    "agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0"
+}
+-------------------

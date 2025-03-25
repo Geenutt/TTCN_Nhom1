@@ -1,0 +1,37 @@
+{
+    "time": "Mon, 24 Mar 2025 16:25:40 +0100",
+    "server": "localhost",
+    "ip": "::1",
+    "errno": "256 (User Error)",
+    "errstr": "Sorry! Could not connect to data server",
+    "file": "/includes/mainfile.php",
+    "line": 358,
+    "request": "/nukeviet/src/admin/index.php?language=vi&nv=siteinfo&op=notification&nocache=1742829940610",
+    "method": "POST",
+    "agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0",
+    "backtrace": [
+        "#1 /admin/index.php(17)",
+        "#2 /includes/mainfile.php(358)"
+    ]
+}
+-------------------
+{
+    "time": "Mon, 24 Mar 2025 17:19:05 +0100",
+    "server": "localhost",
+    "ip": "::1",
+    "errno": "1 (Error)",
+    "errstr": "Uncaught PDOException: SQLSTATE&lbrack;42S02&rbrack;: Base table or view not found: 1146 Table 'tuyendung.nv5_vi_posts' doesn't exist in /includes/vendor/vinades/nukeviet/Core/Database.php:543",
+    "file": "/includes/vendor/vinades/nukeviet/Core/Database.php",
+    "line": 543,
+    "request": "/nukeviet/src/admin/vi/posts/",
+    "method": "GET",
+    "agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0",
+    "backtrace": [
+        "#0 /includes/vendor/vinades/nukeviet/Core/Database.php(543): PDO->query('SELECT * FROM n...', NULL)",
+        "#1 /modules/posts/admin/main.php(19): NukeViet/Core/Database->query('SELECT * FROM n...')",
+        "#2 /admin/index.php(170): require('C:/xampp/htdocs...')",
+        "#3 {main}",
+        "thrown"
+    ]
+}
+-------------------
