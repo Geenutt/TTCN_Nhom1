@@ -42,8 +42,20 @@ if ($nv_Request->get_int('save', 'post') == 1) {
         $sth->execute();
         
         if ($sth->fetchColumn()) {
-            $error[] = $lang_module['error_save'];
+            $error[] = $lang_module['error_title_exists'];
         }
+    }
+
+    if (empty($row['description'])) {
+        $error[] = $lang_module['error_description'];
+    }
+
+    if (empty($row['content'])) {
+        $error[] = $lang_module['error_content']; 
+    }
+
+    if (empty($row['image'])) {
+        $error[] = $lang_module['error_image'];
     }
 
     if (empty($error)) {

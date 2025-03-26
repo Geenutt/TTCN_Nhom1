@@ -1,0 +1,20 @@
+{
+    "time": "Tue, 25 Mar 2025 18:20:11 +0100",
+    "server": "localhost",
+    "ip": "::1",
+    "errno": "1 (Error)",
+    "errstr": "Uncaught PDOException: SQLSTATE&lbrack;42000&rbrack;: Syntax error or access violation: 1235 This version of MariaDB doesn't yet support 'LIMIT & IN/ALL/ANY/SOME subquery' in /includes/vendor/vinades/nukeviet/Core/Database.php:543",
+    "file": "/includes/vendor/vinades/nukeviet/Core/Database.php",
+    "line": 543,
+    "request": "/nukeviet/src/admin/vi/posts/detail/?id=13",
+    "method": "GET",
+    "agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0",
+    "backtrace": [
+        "#0 /includes/vendor/vinades/nukeviet/Core/Database.php(543): PDO->query('SELECT t1.* FRO...', NULL)",
+        "#1 /modules/posts/admin/detail.php(64): NukeViet/Core/Database->query('SELECT t1.* FRO...')",
+        "#2 /admin/index.php(170): require('C:/xampp/htdocs...')",
+        "#3 {main}",
+        "thrown"
+    ]
+}
+-------------------
