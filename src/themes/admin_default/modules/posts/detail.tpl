@@ -77,6 +77,12 @@
                                     <i class="fa fa-clock-o"></i> {ROW.updated_at}
                                 </div>
                             </li>
+                            <li>
+                                <label>{LANG.cv_count}:</label>
+                                <div class="pull-right text-success">
+                                    <i class="fa fa-file-text-o"></i> {ROW.cv_count}
+                                </div>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -267,4 +273,91 @@ $(document).ready(function() {
     });
 });
 </script>
+
+<!-- Modal hiển thị danh sách CV -->
+<div class="modal fade" id="cvListModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"><i class="fa fa-list"></i> {LANG.cv_list}</h4>
+            </div>
+            <div class="modal-body">
+                <div id="cv-list-container">
+                    <!-- Danh sách CV sẽ được thêm vào đây -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sửa lại phần script -->
+<script type="text/javascript">
+$(document).ready(function() {
+    // Xử lý click vào số lượng CV
+    $('.list-info li:last-child').click(function(e) {
+        e.preventDefault();
+        
+        // Lấy danh sách CV
+        $.ajax({
+            url: script_name + '?' + nv_lang_variable + '=' + nv_lang_data + '&' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=detail&id=' + {ROW.id},
+            method: 'POST',
+            data: {
+                action: 'get_cv_list',
+                post_id: {ROW.id},
+                checkss: '{ROW.checkss}'
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.status == 'success') {
+                    var html = '<div class="list-group">';
+                    if (response.data && response.data.length > 0) {
+                        response.data.forEach(function(cv) {
+                            html += '<div class="list-group-item">';
+                            html += '<div class="row">';
+                            html += '<div class="col-xs-18"><h4 class="list-group-item-heading">' + cv.title + '</h4></div>';
+                            html += '<div class="col-xs-6 text-right">';
+                            html += '<a href="' + cv.preview_url + '" class="btn btn-primary btn-xs" target="_blank"><i class="fa fa-eye"></i> {LANG.preview}</a>';
+                            html += '</div>';
+                            html += '</div>';
+                            html += '</div>';
+                        });
+                    } else {
+                        html += '<div class="alert alert-info m-bottom-none"><i class="fa fa-info-circle"></i> {LANG.no_cv_found}</div>';
+                    }
+                    html += '</div>';
+                    $('#cv-list-container').html(html);
+                    $('#cvListModal').modal('show');
+                } else {
+                    alert(response.message || 'Có lỗi xảy ra');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log('XHR:', xhr.responseText);
+                alert('Có lỗi xảy ra khi tải dữ liệu');
+            }
+        });
+    });
+});
+</script>
+
+<style>
+.list-info li:last-child {
+    cursor: pointer;
+}
+.list-info li:last-child:hover {
+    background-color: #f5f5f5;
+}
+.m-bottom-none {
+    margin-bottom: 0;
+}
+.list-group-item-heading {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.4;
+}
+.list-group-item .btn {
+    margin-top: 2px;
+}
+</style>
 <!-- END: main --> 

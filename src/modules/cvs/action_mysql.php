@@ -22,6 +22,7 @@ $sql_create_module[] = "CREATE TABLE `" . $db_config['prefix'] . "_" . $lang . "
     id INT(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
     `title` varchar(255) NOT NULL DEFAULT '' COMMENT 'Tiêu đề CV',
     `link` varchar(255) NOT NULL DEFAULT '' COMMENT 'Đường dẫn file PDF',
+    `selected_post_ids` text DEFAULT NULL COMMENT 'Danh sách ID bài viết được chọn',
     `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)

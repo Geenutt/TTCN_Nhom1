@@ -1,9 +1,5 @@
 <!-- BEGIN: main -->
 <div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title" style="float:left"><i class="fa fa-pencil"></i> {PAGE_TITLE}</h3>
-        <div style="clear:both"></div>
-    </div>
     <div class="panel-body">
         <form class="form-horizontal" action="{FORM_ACTION}" method="post">
             <div class="row">
@@ -18,7 +14,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="col-sm-4 control-label"><strong>{LANG.description}</strong></label>
+                                <label class="col-sm-4 control-label"><strong>{LANG.description}</strong> <span class="red">*</span></label>
                                 <div class="col-sm-20">
                                     <textarea class="form-control" name="description" rows="3">{ROW.description}</textarea>
                                 </div>

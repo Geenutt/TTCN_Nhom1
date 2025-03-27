@@ -10,6 +10,7 @@ $lang_translator['copyright'] = '@Copyright (C) 2009-' . date('Y') . ' VINADES.,
 $lang_translator['info'] = '';
 $lang_translator['langtype'] = 'lang_module';
 
+$lang_module['apply_cv'] = 'Ứng tuyển';
 $lang_module['list'] = 'Danh sách CV';
 $lang_module['create'] = 'Thêm CV';
 $lang_module['edit'] = 'Sửa CV';
@@ -39,3 +40,9 @@ $lang_module['choose_file'] = 'Chọn file';
 $lang_module['file_size_limit'] = 'Kích thước file tối đa: 10 MB';
 $lang_module['file_type_required'] = 'Chỉ chấp nhận file PDF';
 $lang_module['search'] = 'Tìm kiếm';
+$lang_module['apply_cv'] = 'Ứng tuyển CV';
+$lang_module['available_posts'] = 'Danh sách bài tuyển dụng';
+$lang_module['error_security'] = 'Lỗi bảo mật! Token không hợp lệ';
+$lang_module['loading'] = 'Đang tải...';
+$lang_module['error_no_posts_table'] = 'Module Tuyển dụng chưa được cài đặt';
+$lang_module['error_database'] = 'Có lỗi xảy ra khi truy vấn cơ sở dữ liệu';

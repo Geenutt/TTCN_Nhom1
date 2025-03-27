@@ -1,8 +1,38 @@
 <!-- BEGIN: empty -->
-<a href="#" class="btn btn-success">{LANG.create}</a>
+<div class="well">
+    <div class="row">
+        <!-- Form tìm kiếm -->
+        <div class="col-xs-19 col-sm-19 col-md-19">
+            <form action="{FORM_ACTION}" method="get" class="form-inline">
+                <input type="hidden" name="{NV_LANG_VARIABLE}" value="{NV_LANG_DATA}"/>
+                <input type="hidden" name="{NV_NAME_VARIABLE}" value="{MODULE_NAME}"/>
+                <input type="hidden" name="{NV_OP_VARIABLE}" value="{OP}"/>
+                
+                <div class="form-group">
+                    <input type="text" class="form-control" name="search_title" value="{SEARCH.title}" placeholder="{LANG.search_title}" style="width: 250px;">
+                </div>
+                
+                <div class="form-group">
+                    <select class="form-control" name="search_status">
+                        <option value="-1">---{LANG.search_status_all}---</option>
+                        <option value="1"{SEARCH.status == 1 ? ' selected="selected"' : ''}>{LANG.status_1}</option>
+                        <option value="0"{SEARCH.status == 0 ? ' selected="selected"' : ''}>{LANG.status_0}</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> {LANG.search}</button>
+            </form>
+        </div>
+        
+        <!-- Nút thêm mới -->
+        <div class="col-xs-5 col-sm-5 col-md-5 text-right">
+            <a href="{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&{NV_NAME_VARIABLE}={MODULE_NAME}&{NV_OP_VARIABLE}=create" class="btn btn-success"><i class="fa fa-plus"></i> {LANG.create}</a>
+        </div>
+    </div>
+</div>
 <div class="alert alert-info">{LANG.empty}</div>
 <!-- END: empty -->
- 
+
 <!-- BEGIN: main -->
 <!-- Thanh công cụ -->
 <div class="well">

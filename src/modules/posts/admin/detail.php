@@ -15,6 +15,48 @@ if (!defined('NV_IS_FILE_ADMIN')) {
 
 $id = $nv_Request->get_int('id', 'get', 0);
 
+if ($nv_Request->get_string('action', 'post', '') == 'get_cv_list') {
+    // Kiểm tra session admin
+    if (!defined('NV_IS_FILE_ADMIN')) {
+        nv_jsonOutput([
+            'status' => 'error',
+            'message' => 'Session expired'
+        ]);
+    }
+
+    $post_id = $nv_Request->get_int('post_id', 'post', 0);
+    $checkss = $nv_Request->get_string('checkss', 'post', '');
+
+    if ($checkss != md5($post_id . NV_CHECK_SESSION)) {
+        nv_jsonOutput([
+            'status' => 'error',
+            'message' => 'Invalid security token'
+        ]);
+    }
+
+    try {
+        // Lấy danh sách CV có chọn bài viết này
+        $sql = 'SELECT id, title, link FROM ' . NV_PREFIXLANG . '_cvs WHERE FIND_IN_SET(' . $post_id . ', selected_post_ids)';
+        $result = $db->query($sql);
+        $cv_list = [];
+        
+        while ($cv = $result->fetch()) {
+            $cv['preview_url'] = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=cvs&' . NV_OP_VARIABLE . '=detail&id=' . $cv['id'];
+            $cv_list[] = $cv;
+        }
+
+        nv_jsonOutput([
+            'status' => 'success',
+            'data' => $cv_list
+        ]);
+    } catch (PDOException $e) {
+        nv_jsonOutput([
+            'status' => 'error',
+            'message' => $e->getMessage()
+        ]);
+    }
+}
+
 if ($id == 0) {
     nv_redirect_location(NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name);
 }
@@ -44,6 +86,11 @@ if (!empty($row['image']) and is_file(NV_UPLOADS_REAL_DIR . '/' . $module_upload
 
 // Xử lý trạng thái
 $row['status_text'] = $nv_Lang->getModule('status_' . $row['status']);
+
+// Lấy số lượng CV đã nộp cho bài viết này
+$sql = 'SELECT COUNT(*) as total FROM ' . NV_PREFIXLANG . '_cvs WHERE FIND_IN_SET(' . $id . ', selected_post_ids)';
+$cv_count = $db->query($sql)->fetch();
+$row['cv_count'] = $cv_count['total'];
 
 // Lấy 5 bài viết ngẫu nhiên không trùng lặp
 $sql = 'SELECT id, title, description, image 
