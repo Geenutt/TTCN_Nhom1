@@ -54,10 +54,6 @@ if ($nv_Request->get_int('save', 'post') == 1) {
         $error[] = $lang_module['error_content']; 
     }
 
-    if (empty($row['image'])) {
-        $error[] = $lang_module['error_image'];
-    }
-
     if (empty($error)) {
         try {
             // Thêm bài viết mới

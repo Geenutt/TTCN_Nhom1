@@ -22,7 +22,7 @@ $sql_create_module[] = "CREATE TABLE " . $db_config['prefix'] . "_" . $lang . "_
     id INT(11) NOT NULL AUTO_INCREMENT COMMENT 'ID' , 
     title VARCHAR(255) NOT NULL DEFAULT '' COMMENT 'Tiêu đề' , 
     description TEXT NOT NULL DEFAULT '' COMMENT 'Mô tả ngắn' , 
-    image VARCHAR(255) NOT NULL DEFAULT '' COMMENT 'Ảnh' , 
+    image VARCHAR(255) DEFAULT '' COMMENT 'Ảnh' , 
     content MEDIUMTEXT NOT NULL DEFAULT '' COMMENT 'Thông tin chi tiết' , 
     status TINYINT NOT NULL DEFAULT '1' COMMENT 'Trạng thái' , 
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Thời gian khởi tạo' , 
