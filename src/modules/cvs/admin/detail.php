@@ -157,6 +157,74 @@ if ($nv_Request->get_string('action', 'post', '') == 'get_posts') {
     }
 }
 
+if ($nv_Request->get_string('action', 'post', '') == 'get_selected_posts') {
+    if (!defined('NV_IS_FILE_ADMIN')) {
+        nv_jsonOutput([
+            'status' => 'error',
+            'message' => 'Session expired'
+        ]);
+    }
+
+    $cv_id = $nv_Request->get_int('cv_id', 'post', 0);
+    $checkss = $nv_Request->get_string('checkss', 'post', '');
+
+    if ($checkss != md5($cv_id . NV_CHECK_SESSION)) {
+        nv_jsonOutput([
+            'status' => 'error',
+            'message' => 'Invalid security token'
+        ]);
+    }
+
+    try {
+        // Lấy danh sách post_id từ selected_post_ids
+        $sql = 'SELECT selected_post_ids FROM ' . NV_PREFIXLANG . '_' . $module_data . ' WHERE id = ' . $cv_id;
+        $selected_post_ids = $db->query($sql)->fetchColumn();
+        
+        if (!empty($selected_post_ids)) {
+            // Lấy thông tin các bài viết đã chọn và status của CV với từng job
+            $sql = 'SELECT p.id, p.title, COALESCE(cp.status, 0) as cv_status 
+                    FROM ' . NV_PREFIXLANG . '_posts p 
+                    LEFT JOIN ' . NV_PREFIXLANG . '_' . $module_data . '_posts cp 
+                        ON cp.post_id = p.id AND cp.cv_id = ' . $cv_id . '
+                    WHERE p.id IN (' . $selected_post_ids . ')';
+            $result = $db->query($sql);
+            $posts = [];
+            
+            while ($post = $result->fetch()) {
+                $posts[] = [
+                    'id' => $post['id'],
+                    'title' => $post['title'],
+                    'preview_url' => NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=posts&' . NV_OP_VARIABLE . '=detail&id=' . $post['id'],
+                    'cv_status' => intval($post['cv_status'])
+                ];
+            }
+
+            nv_jsonOutput([
+                'status' => 'success',
+                'data' => $posts
+            ]);
+        } else {
+            nv_jsonOutput([
+                'status' => 'success',
+                'data' => []
+            ]);
+        }
+    } catch (PDOException $e) {
+        nv_jsonOutput([
+            'status' => 'error',
+            'message' => $e->getMessage()
+        ]);
+    }
+}
+
+// Thêm hàm format thời gian an toàn
+function formatDateTime($datetime) {
+    if (empty($datetime)) {
+        return '';
+    }
+    return date('d/m/Y H:i', strtotime($datetime));
+}
+
 // Xử lý hiển thị trang chi tiết CV
 if ($id > 0) {
     $sql = 'SELECT * FROM ' . NV_PREFIXLANG . '_' . $module_data . ' WHERE id = :id';
@@ -171,9 +239,9 @@ if ($id > 0) {
         // Thêm checkss cho bảo mật
         $row['checkss'] = md5($row['id'] . NV_CHECK_SESSION);
 
-        // Định dạng thời gian
-        $row['created_at'] = date('d/m/Y H:i', strtotime($row['created_at']));
-        $row['updated_at'] = date('d/m/Y H:i', strtotime($row['updated_at']));
+        // Format lại thời gian
+        $row['created_at'] = formatDateTime($row['created_at']);
+        $row['updated_at'] = formatDateTime($row['updated_at']);
 
         // Đường dẫn file PDF
         $row['file_url'] = NV_BASE_SITEURL . NV_UPLOADS_DIR . '/' . $module_upload . '/' . $row['link'];

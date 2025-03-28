@@ -44,6 +44,9 @@
                         <a class="btn btn-primary" href="#" id="btn-apply-cv">
                             <i class="fa fa-check"></i> {LANG.apply_cv}
                         </a>
+                        <a class="btn btn-info" href="#" id="btn-view-selected">
+                            <i class="fa fa-list"></i> Các công việc đã nộp CV
+                        </a>
                         <a class="btn btn-default" href="{BACK}">
                             <i class="fa fa-arrow-left"></i> {LANG.back}
                         </a>
@@ -64,6 +67,23 @@
                 <i class="fa fa-spinner fa-spin fa-2x"></i> Đang tải...
             </div>
             <div id="posts-list"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Thêm modal cho danh sách công việc đã nộp -->
+<div class="modal fade" id="selectedPostsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"><i class="fa fa-list"></i> Các công việc đã nộp CV</h4>
+            </div>
+            <div class="modal-body">
+                <div id="selected-posts-container">
+                    <!-- Danh sách sẽ được thêm vào đây -->
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -296,6 +316,33 @@
     right: 0;
     text-align: center;
 }
+
+#btn-view-selected {
+    margin: 0 10px;
+}
+
+.btn-success.status-btn {
+    background-color: #5cb85c !important;
+    border-color: #4cae4c !important;
+    color: #fff !important;
+    cursor: not-allowed;
+}
+
+.btn-danger.status-btn {
+    background-color: #d9534f !important;
+    border-color: #d43f3a !important;
+    color: #fff !important;
+    cursor: not-allowed;
+}
+
+.btn-group {
+    display: inline-flex;
+    gap: 5px;
+}
+
+.list-group-item .btn {
+    padding: 3px 8px;
+}
 </style>
 
 <script type="text/javascript">
@@ -325,12 +372,34 @@ $(document).ready(function() {
         if (!postId) return;
         console.log('Cancelling selection for post:', postId);
         
-        selectedPosts.delete(postId);
-        $('#post-' + postId + ' .button-group').html(
-            '<button class="btn btn-primary btn-sm" onclick="selectPost(' + postId + ')">Chọn</button>'
-        );
-        
-        saveSelection(id, Array.from(selectedPosts));
+        if (confirm('Bạn có chắc muốn hủy nộp CV cho vị trí này?')) {
+            selectedPosts.delete(postId);
+            
+            // Xóa item khỏi danh sách trong modal
+            var $listItem = $('#selected-posts-container .list-group-item').filter(function() {
+                return $(this).find('button[onclick*="cancelSelection(' + postId + ')"]').length > 0;
+            });
+            
+            // Animation fade out trước khi xóa
+            $listItem.fadeOut(300, function() {
+                $(this).remove();
+                
+                // Kiểm tra nếu không còn item nào
+                if ($('#selected-posts-container .list-group-item').length === 0) {
+                    $('#selected-posts-container .list-group').html(
+                        '<div class="alert alert-info m-bottom-none">Chưa nộp CV cho công việc nào</div>'
+                    );
+                }
+            });
+
+            // Cập nhật lại button trong grid posts nếu đang hiển thị
+            $('#post-' + postId + ' .button-group').html(
+                '<button class="btn btn-primary btn-sm" onclick="selectPost(' + postId + ')">Chọn</button>'
+            );
+            
+            // Gọi API để lưu thay đổi
+            saveSelection(id, Array.from(selectedPosts));
+        }
     };
 
     // Hàm lưu trạng thái
@@ -345,12 +414,19 @@ $(document).ready(function() {
                 checkss: checkss
             },
             success: function(response) {
-                if (response.status !== 'success') {
+                if (response.status == 'success') {
+                    // Hiển thị thông báo thành công
+                    if (postIds.length === 0) {
+                        alert('Đã hủy nộp CV thành công');
+                    }
+                } else {
                     console.error('Error saving selection:', response.message);
+                    alert('Có lỗi xảy ra: ' + response.message);
                 }
             },
             error: function(xhr, status, error) {
                 console.error('AJAX error:', error);
+                alert('Có lỗi xảy ra khi lưu thay đổi');
             }
         });
     }
@@ -418,6 +494,61 @@ $(document).ready(function() {
             $postsList.hide();
             $postsContainer.hide();
         }
+    });
+
+    // Xử lý click vào nút xem danh sách đã nộp
+    $('#btn-view-selected').click(function(e) {
+        e.preventDefault();
+        
+        $.ajax({
+            url: script_name + '?' + nv_lang_variable + '=' + nv_lang_data + '&' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=detail&id=' + {ROW.id},
+            method: 'POST',
+            data: {
+                action: 'get_selected_posts',
+                cv_id: {ROW.id},
+                checkss: '{ROW.checkss}'
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.status == 'success') {
+                    var html = '<div class="list-group">';
+                    if (response.data && response.data.length > 0) {
+                        response.data.forEach(function(post) {
+                            html += '<div class="list-group-item" id="selected-post-' + post.id + '">';
+                            html += '<div class="row">';
+                            html += '<div class="col-xs-12"><h4 class="list-group-item-heading">' + post.title + '</h4></div>';
+                            html += '<div class="col-xs-12 text-right">';
+                            html += '<div class="btn-group" role="group">';
+                            
+                            // Nút xem chi tiết luôn hiển thị
+                            html += '<a href="' + post.preview_url + '" class="btn btn-info btn-xs" target="_blank"><i class="fa fa-eye"></i> Xem</a>';
+                            
+                            // Hiển thị nút theo trạng thái
+                            if (post.cv_status == 1) { // Đã duyệt
+                                html += '<button type="button" class="btn btn-success btn-xs status-btn" disabled><i class="fa fa-check"></i> Đã duyệt</button>';
+                            } else if (post.cv_status == 2) { // Không duyệt
+                                html += '<button type="button" class="btn btn-danger btn-xs status-btn" disabled><i class="fa fa-ban"></i> Không duyệt</button>';
+                                html += '<button type="button" class="btn btn-danger btn-xs" onclick="cancelSelection(' + post.id + ')"><i class="fa fa-times"></i> Xóa</button>';
+                            } else { // Chưa duyệt
+                                html += '<button type="button" class="btn btn-warning btn-xs" onclick="cancelSelection(' + post.id + ')"><i class="fa fa-times"></i> Hủy</button>';
+                            }
+                            
+                            html += '</div>';
+                            html += '</div>';
+                            html += '</div>';
+                            html += '</div>';
+                        });
+                    } else {
+                        html += '<div class="alert alert-info m-bottom-none">Chưa nộp CV cho công việc nào</div>';
+                    }
+                    html += '</div>';
+                    $('#selected-posts-container').html(html);
+                    $('#selectedPostsModal').modal('show');
+                } else {
+                    alert(response.message || 'Có lỗi xảy ra');
+                }
+            }
+        });
     });
 });
 </script>

@@ -1,12 +1,12 @@
 {
-    "time": "Wed, 26 Mar 2025 17:03:21 +0100",
+    "time": "Fri, 28 Mar 2025 08:26:45 +0100",
     "server": "localhost",
     "ip": "::1",
     "errno": "256 (User Error)",
     "errstr": "Sorry! Could not connect to data server",
     "file": "/includes/mainfile.php",
     "line": 358,
-    "request": "/nukeviet/src/admin/index.php?language=vi&nv=siteinfo&op=notification&nocache=1743005001071",
+    "request": "/nukeviet/src/admin/index.php?language=vi&nv=siteinfo&op=notification&nocache=1743146805275",
     "method": "POST",
     "agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0"
 }

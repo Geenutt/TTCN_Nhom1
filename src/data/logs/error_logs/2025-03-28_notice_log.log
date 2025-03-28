@@ -1,0 +1,52 @@
+{
+    "time": "Fri, 28 Mar 2025 08:26:45 +0100",
+    "server": "localhost",
+    "ip": "::1",
+    "errno": "1024 (User Notice)",
+    "errstr": "SQLSTATE&lbrack;HY000&rbrack; &lbrack;2002&rbrack; No connection could be made because the target machine actively refused it",
+    "file": "/includes/vendor/vinades/nukeviet/Core/Database.php",
+    "line": 94,
+    "request": "/nukeviet/src/admin/index.php?language=vi&nv=siteinfo&op=notification&nocache=1743146805275",
+    "method": "POST",
+    "agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0",
+    "backtrace": [
+        "#1 /admin/index.php(17)",
+        "#2 /includes/mainfile.php(353)",
+        "#3 /includes/vendor/vinades/nukeviet/Core/Database.php(94)"
+    ]
+}
+-------------------
+{
+    "time": "Fri, 28 Mar 2025 08:44:29 +0100",
+    "server": "localhost",
+    "ip": "::1",
+    "errno": "8192 (Deprecated Notice)",
+    "errstr": "strtotime(): Passing null to parameter #1 ($datetime) of type string is deprecated",
+    "file": "/modules/cvs/admin/main.php",
+    "line": 69,
+    "request": "/nukeviet/src/admin/vi/cvs/",
+    "method": "GET",
+    "agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0",
+    "backtrace": [
+        "#1 /admin/index.php(170)",
+        "#2 /modules/cvs/admin/main.php(69)"
+    ]
+}
+-------------------
+{
+    "time": "Fri, 28 Mar 2025 08:46:23 +0100",
+    "server": "localhost",
+    "ip": "::1",
+    "errno": "8192 (Deprecated Notice)",
+    "errstr": "strtotime(): Passing null to parameter #1 ($datetime) of type string is deprecated",
+    "file": "/modules/cvs/admin/detail.php",
+    "line": 236,
+    "request": "/nukeviet/src/admin/vi/cvs/detail/?id=5",
+    "method": "GET",
+    "agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0",
+    "backtrace": [
+        "#1 /admin/index.php(170)",
+        "#2 /modules/cvs/admin/detail.php(236)"
+    ]
+}
+-------------------

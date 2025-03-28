@@ -35,19 +35,66 @@ if ($nv_Request->get_string('action', 'post', '') == 'get_cv_list') {
     }
 
     try {
-        // Lấy danh sách CV có chọn bài viết này
-        $sql = 'SELECT id, title, link FROM ' . NV_PREFIXLANG . '_cvs WHERE FIND_IN_SET(' . $post_id . ', selected_post_ids)';
+        // Sửa lại câu query để lấy status từ bảng trung gian
+        $sql = 'SELECT c.*, cp.status as cv_status 
+                FROM ' . NV_PREFIXLANG . '_cvs c
+                LEFT JOIN ' . NV_PREFIXLANG . '_cvs_posts cp ON c.id = cp.cv_id AND cp.post_id = ' . $id . '
+                WHERE FIND_IN_SET(' . $id . ', c.selected_post_ids)';
+        
         $result = $db->query($sql);
-        $cv_list = [];
+        $cvs = [];
         
         while ($cv = $result->fetch()) {
-            $cv['preview_url'] = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=cvs&' . NV_OP_VARIABLE . '=detail&id=' . $cv['id'];
-            $cv_list[] = $cv;
+            $cvs[] = [
+                'id' => $cv['id'],
+                'title' => $cv['title'],
+                'preview_url' => NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=cvs&' . NV_OP_VARIABLE . '=detail&id=' . $cv['id'],
+                'status' => intval($cv['cv_status']) // Sử dụng cv_status thay vì status
+            ];
         }
 
         nv_jsonOutput([
             'status' => 'success',
-            'data' => $cv_list
+            'data' => $cvs
+        ]);
+    } catch (PDOException $e) {
+        nv_jsonOutput([
+            'status' => 'error',
+            'message' => $e->getMessage()
+        ]);
+    }
+}
+
+if ($nv_Request->get_string('action', 'post', '') == 'update_cv_status') {
+    if (!defined('NV_IS_FILE_ADMIN')) {
+        nv_jsonOutput([
+            'status' => 'error',
+            'message' => 'Session expired'
+        ]);
+    }
+
+    $cv_id = $nv_Request->get_int('cv_id', 'post', 0);
+    $post_id = $nv_Request->get_int('post_id', 'post', 0);
+    $status = $nv_Request->get_int('status', 'post', 0); // 1: duyệt, 2: không duyệt
+    $checkss = $nv_Request->get_string('checkss', 'post', '');
+
+    if ($checkss != md5($post_id . NV_CHECK_SESSION)) {
+        nv_jsonOutput([
+            'status' => 'error',
+            'message' => 'Invalid security token'
+        ]);
+    }
+
+    try {
+        // Cập nhật trạng thái CV cho job cụ thể
+        $sql = 'INSERT INTO ' . NV_PREFIXLANG . '_cvs_posts (cv_id, post_id, status) 
+                VALUES (' . $cv_id . ', ' . $post_id . ', ' . $status . ')
+                ON DUPLICATE KEY UPDATE status = ' . $status;
+        $db->query($sql);
+
+        nv_jsonOutput([
+            'status' => 'success',
+            'message' => 'Cập nhật thành công'
         ]);
     } catch (PDOException $e) {
         nv_jsonOutput([

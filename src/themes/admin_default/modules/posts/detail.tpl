@@ -313,11 +313,28 @@ $(document).ready(function() {
                     var html = '<div class="list-group">';
                     if (response.data && response.data.length > 0) {
                         response.data.forEach(function(cv) {
-                            html += '<div class="list-group-item">';
+                            html += '<div class="list-group-item" id="cv-item-' + cv.id + '">';
                             html += '<div class="row">';
-                            html += '<div class="col-xs-18"><h4 class="list-group-item-heading">' + cv.title + '</h4></div>';
-                            html += '<div class="col-xs-6 text-right">';
-                            html += '<a href="' + cv.preview_url + '" class="btn btn-primary btn-xs" target="_blank"><i class="fa fa-eye"></i> {LANG.preview}</a>';
+                            html += '<div class="col-xs-12"><h4 class="list-group-item-heading">' + cv.title + '</h4></div>';
+                            html += '<div class="col-xs-12 text-right">';
+                            html += '<div class="btn-group" role="group">';
+                            
+                            // Nút xem trước luôn hiển thị
+                            html += '<a href="' + cv.preview_url + '" class="btn btn-info btn-xs" target="_blank"><i class="fa fa-eye"></i> {LANG.preview}</a>';
+                            
+                            // Các nút trạng thái
+                            if (cv.status == 1) { // Đã duyệt
+                                html += '<button type="button" class="btn btn-success btn-xs status-btn" disabled><i class="fa fa-check"></i> Đã duyệt</button>';
+                                html += '<button type="button" class="btn btn-warning btn-xs" onclick="updateCVStatus(' + cv.id + ', 0)"><i class="fa fa-undo"></i> Hủy</button>';
+                            } else if (cv.status == 2) { // Không duyệt
+                                html += '<button type="button" class="btn btn-danger btn-xs status-btn" disabled><i class="fa fa-ban"></i> Không duyệt</button>';
+                                html += '<button type="button" class="btn btn-warning btn-xs" onclick="updateCVStatus(' + cv.id + ', 0)"><i class="fa fa-undo"></i> Hủy</button>';
+                            } else { // Chưa duyệt
+                                html += '<button type="button" class="btn btn-primary btn-xs" onclick="updateCVStatus(' + cv.id + ', 1)"><i class="fa fa-check"></i> Duyệt</button>';
+                                html += '<button type="button" class="btn btn-danger btn-xs" onclick="updateCVStatus(' + cv.id + ', 2)"><i class="fa fa-ban"></i> Không duyệt</button>';
+                            }
+                            
+                            html += '</div>';
                             html += '</div>';
                             html += '</div>';
                             html += '</div>';
@@ -339,6 +356,52 @@ $(document).ready(function() {
         });
     });
 });
+
+// Thêm hàm xử lý cập nhật trạng thái
+function updateCVStatus(cvId, status) {
+    $.ajax({
+        url: script_name + '?' + nv_lang_variable + '=' + nv_lang_data + '&' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=detail&id=' + {ROW.id},
+        method: 'POST',
+        data: {
+            action: 'update_cv_status',
+            cv_id: cvId,
+            post_id: {ROW.id},
+            status: status,
+            checkss: '{ROW.checkss}'
+        },
+        dataType: 'json',
+        success: function(response) {
+            if (response.status == 'success') {
+                var $cvItem = $('#cv-item-' + cvId);
+                var $btnGroup = $cvItem.find('.btn-group');
+                var html = '';
+                
+                // Nút xem trước luôn giữ nguyên
+                html += '<a href="' + $cvItem.find('a.btn-info').attr('href') + '" class="btn btn-info btn-xs" target="_blank"><i class="fa fa-eye"></i> {LANG.preview}</a>';
+                
+                // Cập nhật các nút theo trạng thái mới
+                if (status == 1) { // Duyệt
+                    html += '<button type="button" class="btn btn-success btn-xs status-btn" disabled><i class="fa fa-check"></i> Đã duyệt</button>';
+                    html += '<button type="button" class="btn btn-warning btn-xs" onclick="updateCVStatus(' + cvId + ', 0)"><i class="fa fa-undo"></i> Hủy</button>';
+                } else if (status == 2) { // Không duyệt
+                    html += '<button type="button" class="btn btn-danger btn-xs status-btn" disabled><i class="fa fa-ban"></i> Không duyệt</button>';
+                    html += '<button type="button" class="btn btn-warning btn-xs" onclick="updateCVStatus(' + cvId + ', 0)"><i class="fa fa-undo"></i> Hủy</button>';
+                } else { // Hủy - về trạng thái ban đầu
+                    html += '<button type="button" class="btn btn-primary btn-xs" onclick="updateCVStatus(' + cvId + ', 1)"><i class="fa fa-check"></i> Duyệt</button>';
+                    html += '<button type="button" class="btn btn-danger btn-xs" onclick="updateCVStatus(' + cvId + ', 2)"><i class="fa fa-ban"></i> Không duyệt</button>';
+                }
+                
+                $btnGroup.html(html);
+            } else {
+                alert(response.message || 'Có lỗi xảy ra');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.log('XHR:', xhr.responseText);
+            alert('Có lỗi xảy ra khi cập nhật trạng thái');
+        }
+    });
+}
 </script>
 
 <style>
@@ -358,6 +421,29 @@ $(document).ready(function() {
 }
 .list-group-item .btn {
     margin-top: 2px;
+}
+.btn-group {
+    display: inline-flex;
+    gap: 5px;
+}
+.list-group-item {
+    padding: 10px 15px;
+}
+.list-group-item .btn {
+    padding: 3px 8px;
+}
+.btn[disabled] {
+    pointer-events: none;
+}
+.btn-success.status-btn {
+    background-color: #5cb85c !important;
+    border-color: #4cae4c !important;
+    color: #fff !important;
+}
+.btn-danger.status-btn {
+    background-color: #d9534f !important;
+    border-color: #d43f3a !important;
+    color: #fff !important;
 }
 </style>
 <!-- END: main --> 

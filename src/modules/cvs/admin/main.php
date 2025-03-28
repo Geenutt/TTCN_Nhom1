@@ -61,12 +61,20 @@ if ($sortby == 'id') {
     $xtpl->parse('main.sort_weight');
 }
 
+// Format thời gian an toàn hơn
+function formatDateTime($datetime) {
+    if (empty($datetime)) {
+        return '';
+    }
+    return date('d/m/Y H:i', strtotime($datetime));
+}
+
 if (!empty($_rows)) {
     foreach ($_rows as $row) {
         $row['link_edit'] = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&amp;' . NV_NAME_VARIABLE . '=' . $module_name . '&amp;' . NV_OP_VARIABLE . '=edit&amp;id=' . $row['id'];
         $row['link_view'] = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&amp;' . NV_NAME_VARIABLE . '=' . $module_name . '&amp;' . NV_OP_VARIABLE . '=detail&amp;id=' . $row['id'];
-        $row['created_at'] = date('d/m/Y H:i', strtotime($row['created_at']));
-        $row['updated_at'] = date('d/m/Y H:i', strtotime($row['updated_at']));
+        $row['created_at'] = formatDateTime($row['created_at']);
+        $row['updated_at'] = formatDateTime($row['updated_at']);
         $xtpl->assign('ROW', $row);
         $xtpl->parse('main.loop');
     }
