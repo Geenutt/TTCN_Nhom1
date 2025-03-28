@@ -1,0 +1,80 @@
+name: 'ttcn'
+services:
+
+  # PHP
+  app:
+    build:
+      context: ./php/
+      dockerfile: Dockerfile
+    image: dino/php8.2-fpm
+    container_name: ttcn_app
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS: dev
+    working_dir: /var/www
+    volumes:
+      - ./../src/:/var/www
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - ttcn-network
+
+  # NGINX
+  webserver:
+    image: nginx:alpine
+    container_name: ttcn_webserver
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+    volumes:
+      - ./../src/:/var/www
+      - ./nginx/:/etc/nginx/conf.d/
+    networks:
+      - ttcn-network
+    depends_on:
+      - app
+
+  # MariaDB
+  db:
+    image: mariadb:latest
+    container_name: ttcn_db
+    restart: unless-stopped
+    tty: true
+    environment:
+      MYSQL_DATABASE: ttcn
+      MYSQL_ROOT_PASSWORD: password
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mariadb
+    volumes:
+      - dbdata:/var/lib/mysql/
+      - ./mariadb/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - ttcn-network
+
+  # phpMyAdmin
+  phpmyadmin:
+    container_name: ttcn_phpmyadmin
+    image: phpmyadmin:latest
+    environment:
+      PMA_HOST: ttcn_db
+      PMA_USER: root
+      PMA_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - "8001:80"
+    depends_on:
+      - db
+    networks:
+      - ttcn-network
+
+# Networks
+networks:
+  ttcn-network:
+    driver: bridge
+
+# Volumes
+volumes:
+  dbdata:
+    driver: local
