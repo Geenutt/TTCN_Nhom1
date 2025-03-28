@@ -14,9 +14,9 @@
                 
                 <div class="form-group">
                     <select class="form-control" name="search_status">
-                        <option value="-1">---{LANG.search_status_all}---</option>
                         <option value="1"{SEARCH.status == 1 ? ' selected="selected"' : ''}>{LANG.status_1}</option>
                         <option value="0"{SEARCH.status == 0 ? ' selected="selected"' : ''}>{LANG.status_0}</option>
+                        <option value="-1" selected="selected">---{LANG.search_status_all}---</option>
                     </select>
                 </div>
                 
@@ -50,9 +50,9 @@
                 
                 <div class="form-group">
                     <select class="form-control" name="search_status">
-                        <option value="-1">---{LANG.search_status_all}---</option>
                         <option value="1"{SEARCH.status == 1 ? ' selected="selected"' : ''}>{LANG.status_1}</option>
                         <option value="0"{SEARCH.status == 0 ? ' selected="selected"' : ''}>{LANG.status_0}</option>
+                        <option value="-1" selected="selected">---{LANG.search_status_all}---</option>
                     </select>
                 </div>
                 
