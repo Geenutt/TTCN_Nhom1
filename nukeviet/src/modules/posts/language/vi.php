@@ -20,7 +20,7 @@ $lang_translator['info'] = '';
 $lang_translator['langtype'] = 'lang_module';
 
 $lang_module['list'] = 'Danh sách bài viết';
-$lang_module['create'] = 'Tạo bài viết';
+$lang_module['create'] = 'Tạo tin tuyển dụng';
 $lang_module['delete'] = 'Xóa bài viết';
 $lang_module['empty'] = 'Chưa có dữ liệu';
 $lang_module['title'] = 'Vị trí tuyển dụng';
@@ -49,7 +49,7 @@ $lang_module['updated_at'] = 'Cập nhật lần cuối';
 $lang_module['select_image'] = 'Chọn ảnh';
 $lang_module['preview_image'] = 'Xem trước ảnh';
 $lang_module['search'] = 'Tìm kiếm';
-$lang_module['search_title'] = 'Tiêu đề bài viết';
+$lang_module['search_title'] = 'Vị trí tuyển dụng';
 $lang_module['search_status'] = 'Trạng thái';
 $lang_module['search_status_all'] = 'Tất cả trạng thái';
 $lang_module['sort_asc'] = 'Sắp xếp tăng dần';

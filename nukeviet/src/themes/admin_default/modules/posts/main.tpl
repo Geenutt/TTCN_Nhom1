@@ -99,7 +99,7 @@
                 <td>{ROW.title}</td>
                 <td>{ROW.created_at}</td>
                 <td>{ROW.updated_at}</td>
-                <td>{ROW.status}</td>
+                <td>{ROW.status_text}</td>
                 <td>
                     <a href="{ROW.detail_url}" class="btn btn-info btn-sm"><i class="fa fa-eye"></i></a>
                     <a href="{ROW.edit_url}" class="btn btn-default btn-sm"><i class="fa fa-edit"></i></a>

@@ -38,6 +38,7 @@
                             <a href="{POST.link}" title="{POST.title}">{POST.title}</a>
                         </h4>
                         <div class="related-company">{POST.company_name}</div>
+                        <div class="related-description">{POST.description}</div>
                         <div class="related-time">{POST.created_at}</div>
                     </div>
                 </div>
@@ -182,6 +183,17 @@
     color: #666;
     font-size: 13px;
     margin-bottom: 4px;
+    font-weight: 500;
+}
+.related-description {
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 4px;
+    height: 36px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 .related-time {
     color: #999;

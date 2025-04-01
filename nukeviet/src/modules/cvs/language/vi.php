@@ -46,3 +46,4 @@ $lang_module['error_security'] = 'Lỗi bảo mật! Token không hợp lệ';
 $lang_module['loading'] = 'Đang tải...';
 $lang_module['error_no_posts_table'] = 'Module Tuyển dụng chưa được cài đặt';
 $lang_module['error_database'] = 'Có lỗi xảy ra khi truy vấn cơ sở dữ liệu';
+$lang_module['search_title'] = 'Tiêu đề CV';
