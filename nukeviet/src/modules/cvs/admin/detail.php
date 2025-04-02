@@ -101,12 +101,26 @@ if ($nv_Request->get_string('action', 'post', '') == 'get_posts') {
         $cv_info = $db->query('SELECT selected_post_ids FROM ' . NV_PREFIXLANG . '_' . $module_data . ' WHERE id = ' . $id)->fetch();
         $selected_post_ids = !empty($cv_info['selected_post_ids']) ? explode(',', $cv_info['selected_post_ids']) : array();
 
-        // Truy vấn bảng posts
+        // Xử lý phân trang
+        $page = $nv_Request->get_int('page', 'post', 1);
+        $per_page = 6; // Số bài viết mỗi trang
+
+        // Lấy tổng số bài viết
+        $total = $db->query('SELECT COUNT(*) FROM ' . $table_name . ' WHERE status = 1')->fetchColumn();
+        $total_pages = ceil($total / $per_page);
+
+        // Điều chỉnh số trang nếu vượt quá
+        if ($page > $total_pages) {
+            $page = $total_pages;
+        }
+
+        // Truy vấn bảng posts với phân trang
         $sql = 'SELECT id, title, description, image 
                 FROM ' . $table_name . ' 
                 WHERE status = 1 
-                ORDER BY RAND() 
-                LIMIT 12';
+                ORDER BY id DESC 
+                LIMIT ' . $per_page . ' 
+                OFFSET ' . ($page - 1) * $per_page;
         $posts = $db->query($sql)->fetchAll();
         $data = array();
 
@@ -144,7 +158,12 @@ if ($nv_Request->get_string('action', 'post', '') == 'get_posts') {
         echo json_encode([
             'status' => 'success',
             'message' => '',
-            'data' => $data
+            'data' => $data,
+            'pagination' => array(
+                'current_page' => $page,
+                'total_pages' => $total_pages,
+                'per_page' => $per_page
+            )
         ]);
         exit();
     } catch (PDOException $e) {

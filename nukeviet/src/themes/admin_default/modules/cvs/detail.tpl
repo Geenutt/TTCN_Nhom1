@@ -67,6 +67,17 @@
                 <i class="fa fa-spinner fa-spin fa-2x"></i> Đang tải...
             </div>
             <div id="posts-list"></div>
+            <div id="posts-pagination" class="pagination-wrapper" style="display:none;">
+                <div class="pagination">
+                    <a href="#" class="page-link prev" id="prev-page">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                    <div class="page-numbers" id="page-numbers"></div>
+                    <a href="#" class="page-link next" id="next-page">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -343,6 +354,83 @@
 .list-group-item .btn {
     padding: 3px 8px;
 }
+
+/* Pagination Styles */
+.pagination-wrapper {
+    margin-top: 20px;
+    text-align: center;
+}
+.pagination {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+.page-numbers {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin: 0 5px;
+}
+.page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 12px;
+    font-size: 14px;
+    color: #666;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.page-link:hover {
+    color: #0056b3;
+    background: #f8f9fa;
+    border-color: #0056b3;
+}
+.page-link.active {
+    color: #fff;
+    background: #0056b3;
+    border-color: #0056b3;
+}
+.page-link.prev,
+.page-link.next {
+    padding: 0 8px;
+}
+.page-link.prev i,
+.page-link.next i {
+    font-size: 16px;
+}
+.page-link.disabled {
+    color: #ccc;
+    background: #f8f9fa;
+    border-color: #ddd;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+@media (max-width: 767px) {
+    .pagination {
+        gap: 3px;
+    }
+    .page-numbers {
+        gap: 3px;
+        margin: 0 3px;
+    }
+    .page-link {
+        min-width: 32px;
+        height: 32px;
+        padding: 0 8px;
+        font-size: 13px;
+    }
+    .page-link.prev,
+    .page-link.next {
+        padding: 0 6px;
+    }
+}
 </style>
 
 <script type="text/javascript">
@@ -350,9 +438,12 @@ $(document).ready(function() {
     var $postsContainer = $('#posts-container');
     var $postsList = $('#posts-list');
     var $loading = $('#loading');
+    var $pagination = $('#posts-pagination');
     var id = '{ROW.id}';
     var checkss = '{CHECKSS}';
     var selectedPosts = new Set();
+    var currentPage = 1;
+    var totalPages = 1;
 
     // Định nghĩa hàm selectPost trong phạm vi global
     window.selectPost = function(postId) {
@@ -431,65 +522,159 @@ $(document).ready(function() {
         });
     }
 
-    // Sửa lại hàm hiển thị danh sách bài viết để kiểm tra trạng thái đã chọn
+    // Hàm load danh sách bài viết
+    function loadPosts(page) {
+        $.ajax({
+            url: script_name + '?' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=detail&id=' + id,
+            method: 'POST',
+            data: {
+                action: 'get_posts',
+                checkss: checkss,
+                page: page
+            },
+            beforeSend: function() {
+                $loading.show();
+            },
+            success: function(response) {
+                $loading.hide();
+                if (response.status == 'success') {
+                    var html = '<div class="posts-grid">';
+                    if (response.data && response.data.length > 0) {
+                        response.data.forEach(function(post) {
+                            html += '<div class="post-item" id="post-' + post.id + '">';
+                            html += '<div class="post-image"><img src="' + post.image + '" alt="' + post.title + '"></div>';
+                            html += '<div class="post-info">';
+                            html += '<h3 class="post-title"><a href="' + post.link + '">' + post.title + '</a></h3>';
+                            if (post.description) {
+                                html += '<p class="post-description">' + post.description + '</p>';
+                            }
+                            html += '<div class="button-group">';
+                            if (post.is_selected) {
+                                selectedPosts.add(post.id);
+                                html += '<button class="btn btn-selected btn-sm" disabled>Đã chọn</button>';
+                                html += '<button class="btn btn-cancel btn-sm" onclick="cancelSelection(' + post.id + ')">Hủy</button>';
+                            } else {
+                                html += '<button class="btn btn-primary btn-sm" onclick="selectPost(' + post.id + ')">Chọn</button>';
+                            }
+                            html += '</div>';
+                            html += '</div>';
+                            html += '</div>';
+                        });
+                    } else {
+                        html += '<div class="alert alert-info">Không có bài viết nào</div>';
+                    }
+                    html += '</div>';
+                    $postsList.html(html).show();
+                    
+                    // Cập nhật phân trang
+                    currentPage = response.pagination.current_page;
+                    totalPages = response.pagination.total_pages;
+                    updatePagination();
+                } else {
+                    console.error('Error:', response.message);
+                    alert(response.message || 'Có lỗi xảy ra khi tải danh sách bài viết');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX error:', status, error);
+                console.error('Response:', xhr.responseText);
+                $loading.hide();
+                alert('Có lỗi xảy ra khi tải danh sách bài viết: ' + error);
+            }
+        });
+    }
+
+    // Hàm cập nhật giao diện phân trang
+    function updatePagination() {
+        if (totalPages > 1) {
+            $pagination.show();
+            
+            // Cập nhật nút Previous
+            var $prevPage = $('#prev-page');
+            if (currentPage > 1) {
+                $prevPage.removeClass('disabled').attr('href', '#');
+            } else {
+                $prevPage.addClass('disabled').removeAttr('href');
+            }
+            
+            // Cập nhật nút Next
+            var $nextPage = $('#next-page');
+            if (currentPage < totalPages) {
+                $nextPage.removeClass('disabled').attr('href', '#');
+            } else {
+                $nextPage.addClass('disabled').removeAttr('href');
+            }
+            
+            // Cập nhật số trang
+            var $pageNumbers = $('#page-numbers');
+            $pageNumbers.empty();
+            
+            // Thêm số trang đầu tiên
+            if (currentPage > 2) {
+                $pageNumbers.append(createPageLink(1));
+                if (currentPage > 3) {
+                    $pageNumbers.append('<span class="page-link disabled">...</span>');
+                }
+            }
+            
+            // Thêm các số trang xung quanh trang hiện tại
+            for (var i = Math.max(1, currentPage - 1); i <= Math.min(totalPages, currentPage + 1); i++) {
+                $pageNumbers.append(createPageLink(i));
+            }
+            
+            // Thêm số trang cuối cùng
+            if (currentPage < totalPages - 1) {
+                if (currentPage < totalPages - 2) {
+                    $pageNumbers.append('<span class="page-link disabled">...</span>');
+                }
+                $pageNumbers.append(createPageLink(totalPages));
+            }
+        } else {
+            $pagination.hide();
+        }
+    }
+
+    // Hàm tạo link cho số trang
+    function createPageLink(page) {
+        return $('<a>', {
+            href: '#',
+            class: 'page-link' + (page == currentPage ? ' active' : ''),
+            text: page
+        });
+    }
+
+    // Xử lý click vào nút Previous
+    $('#prev-page').click(function(e) {
+        e.preventDefault();
+        if (currentPage > 1) {
+            loadPosts(currentPage - 1);
+        }
+    });
+
+    // Xử lý click vào nút Next
+    $('#next-page').click(function(e) {
+        e.preventDefault();
+        if (currentPage < totalPages) {
+            loadPosts(currentPage + 1);
+        }
+    });
+
+    // Xử lý click vào số trang
+    $(document).on('click', '#page-numbers .page-link', function(e) {
+        e.preventDefault();
+        var page = parseInt($(this).text());
+        if (page != currentPage) {
+            loadPosts(page);
+        }
+    });
+
+    // Sửa lại hàm click vào nút Apply CV
     $('#btn-apply-cv').click(function(e) {
         e.preventDefault();
         
         if ($postsList.is(':hidden')) {
-            $.ajax({
-                url: script_name + '?' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=detail&id=' + id,
-                method: 'POST',
-                data: {
-                    action: 'get_posts',
-                    checkss: checkss
-                },
-                beforeSend: function() {
-                    $loading.show();
-                },
-                success: function(response) {
-                    $loading.hide();
-                    if (response.status == 'success') {
-                        var html = '<div class="posts-grid">';
-                        if (response.data && response.data.length > 0) {
-                            response.data.forEach(function(post) {
-                                html += '<div class="post-item" id="post-' + post.id + '">';
-                                html += '<div class="post-image"><img src="' + post.image + '" alt="' + post.title + '"></div>';
-                                html += '<div class="post-info">';
-                                html += '<h3 class="post-title"><a href="' + post.link + '">' + post.title + '</a></h3>';
-                                if (post.description) {
-                                    html += '<p class="post-description">' + post.description + '</p>';
-                                }
-                                html += '<div class="button-group">';
-                                // Kiểm tra nếu bài viết đã được chọn
-                                if (post.is_selected) {
-                                    selectedPosts.add(post.id);
-                                    html += '<button class="btn btn-selected btn-sm" disabled>Đã chọn</button>';
-                                    html += '<button class="btn btn-cancel btn-sm" onclick="cancelSelection(' + post.id + ')">Hủy</button>';
-                                } else {
-                                    html += '<button class="btn btn-primary btn-sm" onclick="selectPost(' + post.id + ')">Chọn</button>';
-                                }
-                                html += '</div>';
-                                html += '</div>';
-                                html += '</div>';
-                            });
-                        } else {
-                            html += '<div class="alert alert-info">Không có bài viết nào</div>';
-                        }
-                        html += '</div>';
-                        $postsList.html(html).show();
-                        $postsContainer.show();
-                    } else {
-                        console.error('Error:', response.message);
-                        alert(response.message || 'Có lỗi xảy ra khi tải danh sách bài viết');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('AJAX error:', status, error);
-                    console.error('Response:', xhr.responseText);
-                    $loading.hide();
-                    alert('Có lỗi xảy ra khi tải danh sách bài viết: ' + error);
-                }
-            });
+            loadPosts(1); // Load trang đầu tiên
+            $postsContainer.show();
         } else {
             $postsList.hide();
             $postsContainer.hide();

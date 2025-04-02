@@ -30,15 +30,35 @@ $sortby = $nv_Request->get_string('sortby', 'get', 'id');
 $sorttype = $nv_Request->get_string('sorttype', 'get', 'DESC');
 $sorttype = ($sorttype == 'DESC') ? 'DESC' : 'ASC';
 
-// Query với điều kiện tìm kiếm và sắp xếp
-$sql = 'SELECT * FROM ' . NV_PREFIXLANG . '_' . $module_data . ' WHERE ' . $where . ' ORDER BY ' . $sortby . ' ' . $sorttype;
+// Xử lý phân trang
+$page = $nv_Request->get_int('page', 'get', 1);
+$per_page = 5; // Số CV mỗi trang
 
-$sth = $db->prepare($sql);
-if (!empty($search['title'])) {
-    $sth->bindValue(':title', '%' . $search['title'] . '%', PDO::PARAM_STR);
+// Lấy tổng số CV
+$db->sqlreset()
+    ->select('COUNT(*)')
+    ->from(NV_PREFIXLANG . '_' . $module_data)
+    ->where($where);
+$total = $db->query($db->sql())->fetchColumn();
+
+// Tính tổng số trang
+$total_pages = ceil($total / $per_page);
+
+// Điều chỉnh số trang nếu vượt quá
+if ($page > $total_pages) {
+    $page = $total_pages;
 }
-$sth->execute();
-$_rows = $sth->fetchAll();
+
+// Lấy danh sách CV theo trang
+$db->sqlreset()
+    ->select('*')
+    ->from(NV_PREFIXLANG . '_' . $module_data)
+    ->where($where)
+    ->order($sortby . ' ' . $sorttype)
+    ->limit($per_page)
+    ->offset(($page - 1) * $per_page);
+$result = $db->query($db->sql());
+$_rows = $result->fetchAll();
 $num = count($_rows);
 
 $xtpl = new XTemplate('main.tpl', NV_ROOTDIR . '/themes/' . $global_config['module_theme'] . '/modules/' . $module_file);
@@ -77,6 +97,48 @@ if (!empty($_rows)) {
         $row['updated_at'] = formatDateTime($row['updated_at']);
         $xtpl->assign('ROW', $row);
         $xtpl->parse('main.loop');
+    }
+    
+    // Tạo phân trang
+    if ($total_pages > 1) {
+        $base_url = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&amp;' . NV_NAME_VARIABLE . '=' . $module_name;
+        if (!empty($search['title'])) {
+            $base_url .= '&amp;search_title=' . $search['title'];
+        }
+        if ($sortby != 'id') {
+            $base_url .= '&amp;sortby=' . $sortby;
+        }
+        if ($sorttype != 'DESC') {
+            $base_url .= '&amp;sorttype=' . $sorttype;
+        }
+        
+        // Nút Previous
+        if ($page > 1) {
+            $prev_page = $page - 1;
+            $xtpl->assign('PREV_PAGE_URL', $base_url . '&amp;page=' . $prev_page);
+            $xtpl->parse('main.generate_page.prev_page');
+        } else {
+            $xtpl->parse('main.generate_page.prev_page_disabled');
+        }
+        
+        // Các số trang
+        for ($i = 1; $i <= $total_pages; $i++) {
+            $xtpl->assign('PAGE_URL', $base_url . '&amp;page=' . $i);
+            $xtpl->assign('PAGE_NUMBER', $i);
+            $xtpl->assign('ACTIVE', $i == $page ? 'active' : '');
+            $xtpl->parse('main.generate_page.page_number');
+        }
+        
+        // Nút Next
+        if ($page < $total_pages) {
+            $next_page = $page + 1;
+            $xtpl->assign('NEXT_PAGE_URL', $base_url . '&amp;page=' . $next_page);
+            $xtpl->parse('main.generate_page.next_page');
+        } else {
+            $xtpl->parse('main.generate_page.next_page_disabled');
+        }
+        
+        $xtpl->parse('main.generate_page');
     }
 } else {
     $xtpl->parse('main.empty');
