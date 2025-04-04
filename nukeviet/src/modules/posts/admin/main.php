@@ -21,11 +21,15 @@ $search['title'] = $nv_Request->get_title('search_title', 'get', '');
 $search['status'] = $nv_Request->get_int('search_status', 'get', -1);
 
 $where = '1=1';
+$params = array();
+
 if (!empty($search['title'])) {
     $where .= ' AND title LIKE :title';
+    $params[':title'] = '%' . $search['title'] . '%';
 }
 if ($search['status'] !== -1) {
-    $where .= ' AND status = ' . $search['status'];
+    $where .= ' AND status = :status';
+    $params[':status'] = $search['status'];
 }
 
 // Thêm xử lý sắp xếp
@@ -44,7 +48,9 @@ $db->sqlreset()
     ->select('COUNT(*)')
     ->from(NV_PREFIXLANG . '_' . $module_data)
     ->where($where);
-$total = $db->query($db->sql())->fetchColumn();
+$sth = $db->prepare($db->sql());
+$sth->execute($params);
+$total = $sth->fetchColumn();
 
 // Tính tổng số trang
 $total_pages = ceil($total / $per_page);
@@ -52,6 +58,9 @@ $total_pages = ceil($total / $per_page);
 // Điều chỉnh số trang nếu vượt quá
 if ($page > $total_pages) {
     $page = $total_pages;
+}
+if ($page < 1) {
+    $page = 1;
 }
 
 // Lấy danh sách bài viết theo trang
@@ -62,8 +71,9 @@ $db->sqlreset()
     ->order($orderby . ' ' . $ordertype)
     ->limit($per_page)
     ->offset(($page - 1) * $per_page);
-$result = $db->query($db->sql());
-$_rows = $result->fetchAll();
+$sth = $db->prepare($db->sql());
+$sth->execute($params);
+$_rows = $sth->fetchAll();
 $num = count($_rows);
 
 $xtpl = new XTemplate('main.tpl', NV_ROOTDIR . '/themes/' . $global_config['module_theme'] . '/modules/' . $module_file);

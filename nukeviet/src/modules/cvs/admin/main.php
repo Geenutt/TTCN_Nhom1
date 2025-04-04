@@ -20,8 +20,11 @@ $search = [];
 $search['title'] = $nv_Request->get_title('search_title', 'get', '');
 
 $where = '1=1';
+$params = array();
+
 if (!empty($search['title'])) {
     $where .= ' AND title LIKE :title';
+    $params[':title'] = '%' . $search['title'] . '%';
 }
 
 // Xử lý sắp xếp
@@ -39,7 +42,9 @@ $db->sqlreset()
     ->select('COUNT(*)')
     ->from(NV_PREFIXLANG . '_' . $module_data)
     ->where($where);
-$total = $db->query($db->sql())->fetchColumn();
+$sth = $db->prepare($db->sql());
+$sth->execute($params);
+$total = $sth->fetchColumn();
 
 // Tính tổng số trang
 $total_pages = ceil($total / $per_page);
@@ -47,6 +52,9 @@ $total_pages = ceil($total / $per_page);
 // Điều chỉnh số trang nếu vượt quá
 if ($page > $total_pages) {
     $page = $total_pages;
+}
+if ($page < 1) {
+    $page = 1;
 }
 
 // Lấy danh sách CV theo trang
@@ -57,8 +65,9 @@ $db->sqlreset()
     ->order($sortby . ' ' . $sorttype)
     ->limit($per_page)
     ->offset(($page - 1) * $per_page);
-$result = $db->query($db->sql());
-$_rows = $result->fetchAll();
+$sth = $db->prepare($db->sql());
+$sth->execute($params);
+$_rows = $sth->fetchAll();
 $num = count($_rows);
 
 $xtpl = new XTemplate('main.tpl', NV_ROOTDIR . '/themes/' . $global_config['module_theme'] . '/modules/' . $module_file);
